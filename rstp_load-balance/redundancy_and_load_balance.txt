@@ -1,0 +1,56 @@
+Access layer SW-s are configurued so: 
+- There are 4 VLANs: 10, 20, 30, and 40.
+- RSTP is enabled (rapid-PVST actually):
+#spanning-tree mode rapid-pvst
+- portfast and bpduguard is enbaled as default settings on access ports:
+#spanning-tree portfast default
+#spanning-tree portfast bpduguard default
+- EtherChannel is configured in "on" mode (neither LACP nor PAgP):
+#int port-channel <ch_num>
+specify the interface range (e.g., int range f0/10-12) and configure:
+#channel-group <ch_num> mode on
+- portchannels between SWA-s and uplinks only tag "inner" VLANs. It requires explicitly add VLAN numbers:
+#switchport mode trunk
+#switchport trunk allowed vlan <VID>, <anotherVID> ...
+
+Distribution layer SW-s provide load-balancing. It means that SWD2 is configured as the primary root bridge for VLAN-s 10 and 40, while SWD1 is the primary root bridge for VLAN-s 20 and 30. Conversely, SWD2 acts as the secondary root bridges for VLAN-s 20, 30, and SWD1 is the secondary root bridges for VLAN-s for 10 and 40.
+#spanning-tree vlan 10 root primary
+#spanning-tree vlan 20 root secondary
+To check spanning tree topology (this can be done on both SWA-s and SWD-s):
+#sh spanning-tree vlan <VID>
+
+R1 and R2 act as default gateway for each VLAN, running HSRP. R1 is primary router (with a priority of 200) for VLANs 20,30, while R2 is primary router for VLAN-s 10 and 40 with the same priority. Virtual IP address for each gateway is 192.168.<VID>.1.
+for example VLAN 30 on interface GigabitEthernet0/1/0.30 of R1:
+#standby 30 ip 192.168.30.1
+#standby 30 priority 200
+#standby 30 preempt
+command to check:
+#sh standby brief
+#sh standy
+
+DHCP configuration for each VLAN: each VLAN uses 192.168.<VID>.0/24 network with DHCP providing IP addresses. Host IP addresses start from 192.168.<VID>.10.
+#ip dhcp pool VLAN_<VID>
+#network 192.168.<VID>.0 255.255.255.0
+#default-router 192.168.<VID>.1
+#dns-server 192.168.10.5 (Internal server)
+to exclude the first 9 IP addresses, use:
+#ip dhcp excluded-address 192.168.<VID>.1 192.168.<VID>.9
+
+PAT configuration for each VLAN on both routers:
+on each internal subinterface: 
+#ip nat inside
+on the "external" interface (G0/0/0):
+ip nat outside
+in global config mode create access lists for each VLAN:
+#access-list <VID> permit 192.168.<VID>.0 0.0.0.255
+#ip nat pool out_pool <external_interface_IP> <external_interface_IP> netmask 255.255.255.252 
+#ip nat inside source list <VID> pool out_pool overload 
+this translates the traffic that matches the access list to the external IP address of the routers
+
+finally set up default route for routers:
+#ip route 0.0.0.0 0.0.0.0 <ISP_address>
+
+as global WEB acts router with three interfaces: two of them are connected to our internal network with different IP addresses from different networks (like two different ISP-s). Third interface is connected to the external Internet server (1.1.1.1/30). I added DNS A to the Internal server which perfomes as DNS server.
+
+to verify NAT translation, you can use the CPT browser connect to "google.com" or ping the resource and check the translation:
+show ip nat translations
