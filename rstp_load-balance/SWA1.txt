@@ -1,0 +1,260 @@
+SWA1#sh run
+Building configuration...
+
+Current configuration : 1998 bytes
+!
+version 15.0
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+no service password-encryption
+!
+hostname SWA1
+!
+!
+!
+!
+!
+!
+spanning-tree mode rapid-pvst
+spanning-tree portfast default
+spanning-tree portfast bpduguard default
+spanning-tree extend system-id
+!
+interface Port-channel1
+ switchport trunk allowed vlan 10,40
+ switchport mode trunk
+!
+interface Port-channel2
+ switchport trunk allowed vlan 10,40
+ switchport mode trunk
+!
+interface FastEthernet0/1
+ switchport access vlan 10
+ switchport mode access
+!
+interface FastEthernet0/2
+ switchport access vlan 20
+ switchport mode access
+!
+interface FastEthernet0/3
+ switchport access vlan 20
+ switchport mode access
+!
+interface FastEthernet0/4
+ switchport access vlan 40
+ switchport mode access
+!
+interface FastEthernet0/5
+!
+interface FastEthernet0/6
+!
+interface FastEthernet0/7
+!
+interface FastEthernet0/8
+!
+interface FastEthernet0/9
+!
+interface FastEthernet0/10
+!
+interface FastEthernet0/11
+!
+interface FastEthernet0/12
+!
+interface FastEthernet0/13
+!
+interface FastEthernet0/14
+!
+interface FastEthernet0/15
+!
+interface FastEthernet0/16
+!
+interface FastEthernet0/17
+!
+interface FastEthernet0/18
+!
+interface FastEthernet0/19
+!
+interface FastEthernet0/20
+!
+interface FastEthernet0/21
+ switchport trunk allowed vlan 10,40
+ switchport mode trunk
+ channel-group 1 mode on
+!
+interface FastEthernet0/22
+ switchport trunk allowed vlan 10,40
+ switchport mode trunk
+ channel-group 1 mode on
+!
+interface FastEthernet0/23
+ switchport trunk allowed vlan 10,40
+ switchport mode trunk
+ channel-group 2 mode on
+!
+interface FastEthernet0/24
+ switchport trunk allowed vlan 10,40
+ switchport mode trunk
+ channel-group 2 mode on
+!
+interface GigabitEthernet0/1
+ switchport trunk allowed vlan 10,20,40
+ switchport mode trunk
+!
+interface GigabitEthernet0/2
+ switchport trunk allowed vlan 10,20,40
+ switchport mode trunk
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+!
+!
+!
+line con 0
+!
+line vty 0 4
+ login
+line vty 5 15
+ login
+!
+!
+!
+!
+end
+
+
+SWA1#
+
+SWA1#sh etherchannel summary 
+Flags:  D - down        P - in port-channel
+        I - stand-alone s - suspended
+        H - Hot-standby (LACP only)
+        R - Layer3      S - Layer2
+        U - in use      f - failed to allocate aggregator
+        u - unsuitable for bundling
+        w - waiting to be aggregated
+        d - default port
+
+
+Number of channel-groups in use: 2
+Number of aggregators:           2
+
+Group  Port-channel  Protocol    Ports
+------+-------------+-----------+----------------------------------------------
+
+1      Po1(SU)           -      Fa0/21(P) Fa0/22(P) 
+2      Po2(SU)           -      Fa0/23(P) Fa0/24(P) 
+SWA1#
+
+SWA1#sh int trunk 
+Port        Mode         Encapsulation  Status        Native vlan
+Po1         on           802.1q         trunking      1
+Po2         on           802.1q         trunking      1
+Gig0/1      on           802.1q         trunking      1
+Gig0/2      on           802.1q         trunking      1
+
+Port        Vlans allowed on trunk
+Po1         10,40
+Po2         10,40
+Gig0/1      10,20,40
+Gig0/2      10,20,40
+
+Port        Vlans allowed and active in management domain
+Po1         10,40
+Po2         10,40
+Gig0/1      10,20,40
+Gig0/2      10,20,40
+
+Port        Vlans in spanning tree forwarding state and not pruned
+Po1         none
+Po2         10,40
+Gig0/1      20
+Gig0/2      10,40
+
+SWA1#
+
+SWA1#sh spanning-tree 
+VLAN0001
+  Spanning tree enabled protocol rstp
+  Root ID    Priority    32769
+             Address     0001.9648.6A7C
+             Cost        4
+             Port        26(GigabitEthernet0/2)
+             Hello Time  2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32769  (priority 32768 sys-id-ext 1)
+             Address     000C.8553.2D17
+             Hello Time  2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  20
+
+Interface        Role Sts Cost      Prio.Nbr Type
+---------------- ---- --- --------- -------- --------------------------------
+Gi0/1            Altn BLK 4         128.25   P2p
+Gi0/2            Root FWD 4         128.26   P2p
+Po1              Altn BLK 12        128.27   Shr
+Po2              Desg FWD 12        128.28   Shr
+
+VLAN0010
+  Spanning tree enabled protocol rstp
+  Root ID    Priority    20490
+             Address     0001.9648.6A7C
+             Cost        4
+             Port        26(GigabitEthernet0/2)
+             Hello Time  2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32778  (priority 32768 sys-id-ext 10)
+             Address     000C.8553.2D17
+             Hello Time  2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  20
+
+Interface        Role Sts Cost      Prio.Nbr Type
+---------------- ---- --- --------- -------- --------------------------------
+Gi0/1            Altn BLK 4         128.25   P2p
+Gi0/2            Root FWD 4         128.26   P2p
+Po1              Altn BLK 12        128.27   Shr
+Po2              Desg FWD 12        128.28   Shr
+Fa0/1            Desg FWD 19        128.1    P2p
+
+VLAN0020
+  Spanning tree enabled protocol rstp
+  Root ID    Priority    24596
+             Address     0005.5EB9.529A
+             Cost        4
+             Port        25(GigabitEthernet0/1)
+             Hello Time  2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32788  (priority 32768 sys-id-ext 20)
+             Address     000C.8553.2D17
+             Hello Time  2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  20
+
+Interface        Role Sts Cost      Prio.Nbr Type
+---------------- ---- --- --------- -------- --------------------------------
+Fa0/3            Desg FWD 19        128.3    P2p
+Gi0/1            Root FWD 4         128.25   P2p
+Gi0/2            Altn BLK 4         128.26   P2p
+Fa0/2            Desg FWD 19        128.2    P2p
+
+VLAN0040
+  Spanning tree enabled protocol rstp
+  Root ID    Priority    20520
+             Address     0001.9648.6A7C
+             Cost        4
+             Port        26(GigabitEthernet0/2)
+             Hello Time  2 sec  Max Age 20 sec  Forward Delay 15 sec
+
+  Bridge ID  Priority    32808  (priority 32768 sys-id-ext 40)
+             Address     000C.8553.2D17
+             Hello Time  2 sec  Max Age 20 sec  Forward Delay 15 sec
+             Aging Time  20
+
+Interface        Role Sts Cost      Prio.Nbr Type
+---------------- ---- --- --------- -------- --------------------------------
+Fa0/4            Desg FWD 19        128.4    P2p
+Gi0/1            Altn BLK 4         128.25   P2p
+Gi0/2            Root FWD 4         128.26   P2p
+Po1              Altn BLK 12        128.27   Shr
+Po2              Desg FWD 12        128.28   Shr
+
+SWA1#

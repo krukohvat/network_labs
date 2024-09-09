@@ -50,7 +50,7 @@ this translates the traffic that matches the access list to the external IP addr
 finally set up default route for routers:
 #ip route 0.0.0.0 0.0.0.0 <ISP_address>
 
-as global WEB acts router with three interfaces: two of them are connected to our internal network with different IP addresses from different networks (like two different ISP-s). Third interface is connected to the external Internet server (1.1.1.1/30). I added DNS A to the Internal server which perfomes as DNS server.
+as global WEB acts router with three interfaces: two of them are connected to our internal network with different IP addresses from different networks (like two different ISP-s). Third interface is connected to the external Internet server (1.1.1.1/30). I added DNS A to the Internal server (192.168.10.5) which perfomes as DNS server.
 
 to verify NAT translation, you can use the CPT browser connect to "google.com" or ping the resource and check the translation:
 show ip nat translations
